@@ -1,0 +1,11 @@
+{
+  "name": "@gonzih/skills-realestate",
+  "version": "0.1.0",
+  "description": "Real estate agent AI skills for Claude Code — listing copy, market reports, client follow-up, offer analysis",
+  "license": "MIT",
+  "author": "Gonzih",
+  "type": "module",
+  "bin": { "skills-realestate": "./install.js" },
+  "keywords": ["claude", "claude-code", "skill", "real-estate", "mcp", "ai-agent", "realtor"],
+  "files": ["skills/", "install.js", "llms.txt", "README.md"]
+}

@@ -1,0 +1,70 @@
+# skills-realestate
+
+AI skill suite for real estate agents using Claude Code. Install all 4 skills via `npx @gonzih/skills-realestate`. Each skill is a markdown prompt file that drops into `~/.claude/skills/` and is invocable via `/skill-name` in Claude Code or Telegram.
+
+## Skills
+
+### /listing-writer
+**Description:** Produces compelling MLS-ready property listing copy from basic specs.
+**Triggers:** listing description, write listing, property description, MLS listing, listing copy
+**Outputs:**
+- MLS version (150 words): punchy opener, 3 key features, neighborhood, CTA
+- Marketing version (400 words): narrative arc, room-by-room, neighborhood, lifestyle vision
+- 3 Instagram captions with hashtag suggestions
+**Example invocation:** "Write a listing for a 3-bed 2-bath Reno home, mountain views, renovated kitchen, $485K"
+
+---
+
+### /market-report
+**Description:** Generates a professional market conditions report for a specific area and property type.
+**Triggers:** market report, market analysis, CMA, market conditions, neighborhood market, real estate market update
+**Outputs:**
+- Market narrative with supply/demand analysis (agent fills in MLS numbers)
+- Buyer vs. seller market determination with supporting reasoning
+- "What this means for you" — separate buyer and seller versions
+- 3 agent talking points for live presentations
+- 200-word newsletter blurb ready to send to clients
+**Example invocation:** "Generate a market report for South Reno SFR homes $400-600K for a listing appointment"
+
+---
+
+### /client-followup
+**Description:** Writes professional, warm follow-up emails and texts for every stage of the client relationship.
+**Triggers:** follow up email, client follow up, after showing, nurture email, buyer follow up, seller follow up, open house follow up
+**Scenarios covered:**
+- Post-showing (loved it / didn't love it / on the fence)
+- Offer rejected — keep client from walking
+- Price reduction conversation with seller
+- Dormant buyer reactivation (3/6/12 months)
+- Post-closing thank you and referral ask
+- Open house follow-up
+**Outputs per scenario:** 3 subject line options, 150–200 word email, 3–4 sentence SMS version, day-3 and day-7 follow-up if no reply
+**Example invocation:** "Write a follow-up for a buyer who was on the fence after today's showing"
+
+---
+
+### /offer-analyzer
+**Description:** Analyzes one or multiple purchase offers — scores strength, flags risks, recommends strategy, generates seller presentation.
+**Triggers:** analyze offer, review offer, offer terms, counter offer, offer comparison, evaluate offer
+**Outputs:**
+- Strength score per offer (1–10) across: financial strength, certainty of close, timeline fit, earnest money
+- Risk flags in plain language
+- Clear recommendation: accept / counter / decline + reasoning
+- Specific counter-offer terms with reasonable vs. aggressive framing
+- One-page offer comparison table formatted for seller presentation
+**Example invocation:** "I have two offers on 123 Main St, help me compare them and prepare for the seller meeting"
+
+---
+
+## Installation
+
+```bash
+npx @gonzih/skills-realestate
+```
+
+Or manually copy any `SKILL.md` file to `~/.claude/skills/<skill-name>/SKILL.md`.
+
+## Package info
+- **npm:** @gonzih/skills-realestate
+- **License:** MIT
+- **Part of:** EcoFiClaw professional skills ecosystem
