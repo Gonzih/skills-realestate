@@ -54,6 +54,49 @@ Examples of strong talking points:
 ### Step 6 — Newsletter version
 200-word client-ready market update. Warm, professional, non-salesy tone. Written in first person from the agent's voice. Structure: opening hook → market summary (with `[number]` placeholders) → what it means → forward-looking note → soft CTA ("Questions about what this means for your home's value? Reply to this email."). Agent drops in actual numbers and sends.
 
+## Live Data Sources
+
+### FRED API — Mortgage Rates & Macro Indicators
+Base URL: `https://api.stlouisfed.org/fred/series/observations`
+
+**30-year fixed mortgage rate (MORTGAGE30US)**
+```
+GET https://api.stlouisfed.org/fred/series/observations
+  ?series_id=MORTGAGE30US
+  &api_key={key}
+  &file_type=json
+  &sort_order=desc
+  &limit=4
+```
+Returns the last 4 weekly observations. Use the most recent value as the current rate and compute week-over-week change to describe rate trend (rising/falling/stable).
+
+**Median Sales Price of Existing Homes (MSPUS)**
+```
+GET https://api.stlouisfed.org/fred/series/observations
+  ?series_id=MSPUS
+  &api_key={key}
+  &file_type=json
+  &sort_order=desc
+  &limit=6
+```
+Quarterly national median. Compare current quarter to prior quarter (QoQ%) and prior year (YoY%) to frame price appreciation context.
+
+**Housing Inventory — Active Listings (ACTLISCOUUS)**
+```
+GET https://api.stlouisfed.org/fred/series/observations
+  ?series_id=ACTLISCOUUS
+  &api_key={key}
+  &file_type=json
+  &sort_order=desc
+  &limit=13
+```
+Monthly national active listing count. Plot last 13 months to identify inventory trend (rising = softening market; falling = tightening). Use as macro backdrop when local MLS data shows similar direction.
+
+**Query pattern**: Fetch all three series in parallel. Pull the latest value plus sufficient history for trend calculation. Inject into the market narrative as macro context: "Nationally, the 30-year rate sits at X%, providing [headwind/tailwind] for buyers in this price range."
+
+### Seasonal & Trend Context
+FRED's `HOUST` (housing starts) and `HSN1F` (new single-family home sales) series add forward-looking context for the newsletter blurb. Query with `limit=3` for a 3-month trend snapshot.
+
 ## Example outputs
 
 ### Example: South Reno SFR market, $400–600K, listing appointment

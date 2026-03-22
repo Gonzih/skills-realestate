@@ -82,6 +82,46 @@ Don't apologize for reaching out. Bring value: something changed in the market, 
 ### Post-closing thank you + referral ask
 This is a two-part message. Part 1: genuine gratitude for trusting you with one of the biggest transactions of their life. Part 2: plant the referral seed naturally — "if anyone you know is thinking about buying or selling, I'd be honored to help them the same way." Don't make them feel obligated.
 
+## Live Data Sources
+
+### Zillow Price Change Webhooks
+Zillow's Bridge Interactive platform (for MLS-connected subscribers) provides webhook-based event delivery for listing status changes. Use these triggers to drive automated follow-up initiation:
+
+**Event types to subscribe to:**
+- `listing.price_reduced` — fires when a listing's list price decreases; payload includes old price, new price, percent change, and effective date
+- `listing.status_changed` — fires on transitions: `Active → Pending`, `Pending → Closed`, `Active → Withdrawn`, `Withdrawn → Active` (re-list)
+- `listing.back_on_market` — fires when a pending/contingent listing returns to active status (deal fell through — high-value trigger for dormant buyer reactivation)
+
+**Webhook registration pattern (Bridge Interactive)**:
+```
+POST https://bridgeinteractive.com/api/v2/webhooks
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "event": "listing.price_reduced",
+  "target_url": "https://your-crm.example.com/hooks/zillow",
+  "filters": {
+    "zip_codes": ["89511", "89523"],
+    "price_range": {"min": 400000, "max": 700000},
+    "property_types": ["SFR", "CONDO"]
+  }
+}
+```
+
+**Triggering the client-followup skill from a webhook:**
+When `listing.price_reduced` fires on a property a tracked buyer has shown interest in, invoke `/client-followup` with scenario = "dormant buyer reactivation" and inject the price change data into the context: `"The home at {address} just dropped from ${old_price} to ${new_price} (-{pct}%) — this is the moment to re-engage {client_name}."`
+
+When `listing.back_on_market` fires, invoke with scenario = "on the fence" and note the deal fell through, which may signal negotiability.
+
+### Listing Status Change Triggers
+For agents without Bridge Interactive access, Zillow's public listing pages update status indicators that can be polled:
+- **Poll pattern**: `GET https://www.zillow.com/homes/{zpid}_zpid/` — parse the `hdpData.homeInfo.homeStatus` field from the embedded JSON (`__NEXT_DATA__` script tag). Values: `FOR_SALE`, `PENDING`, `RECENTLY_SOLD`, `OTHER`.
+- **Poll frequency**: every 6–12 hours for active watchlist properties; no need for more frequent polling as MLS status updates typically propagate to Zillow within a few hours.
+- **Price history endpoint**: `https://www.zillow.com/graphql/` with the `HomeDetailsPriceHistoryQuery` — returns full price history array including reduction events, useful for identifying recently reduced listings across a saved search area.
+
+Use status change detection to trigger time-sensitive follow-ups: a `FOR_SALE → PENDING` transition on a home a client toured is the trigger for a proactive check-in ("It went pending — here's what I'm seeing in the pipeline for you next").
+
 ## Example outputs
 
 ### Example: After showing — on the fence
