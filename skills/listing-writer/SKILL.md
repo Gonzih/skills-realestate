@@ -63,6 +63,27 @@ Three Instagram caption options:
 
 Each followed by 10-12 relevant hashtags mixing broad (#realestate, #justlisted) and local (#RenoRealEstate, #NVhomes).
 
+## Live Data Sources
+
+### Zillow Public Data
+Zillow exposes property data through its public-facing pages and bridge data partnerships. Use the following patterns when enriching a listing:
+- **Property details**: `https://www.zillow.com/homes/{address}_rb/` — scrape or use Zillow's Bridge Interactive data feed (for MLS-connected agents) to pull current Zestimate, recent sold comps, and days on market history.
+- **Comparable sales query pattern**: Search `https://www.zillow.com/homes/recently_sold/{zip-code}_rb/` filtered by bed/bath/sqft range and sold within 90 days. Pull: address, sale price, price/sqft, DOM, and list-to-sale ratio.
+- **Neighborhood data**: Zillow's neighborhood pages (`/neighborhood/{city}/{neighborhood}/`) expose median listing price trends, inventory count, and price-per-sqft history — useful for the neighborhood paragraph in the marketing version.
+
+### Walk Score API
+API documentation: `https://www.walkscore.com/professional/api.php`
+- **Endpoint**: `https://api.walkscore.com/score?format=json&address={encoded_address}&lat={lat}&lon={lon}&transit=1&bike=1&wsapikey={key}`
+- **Returns**: Walk Score (0–100), Transit Score, Bike Score, and a plain-English description (e.g., "Walker's Paradise", "Car-Dependent").
+- **Query pattern**: Geocode the property address first (Google Maps Geocoding API or free Nominatim), then pass lat/lon + address to Walk Score. Cache results — scores change infrequently.
+- **Use in listing copy**: Embed Walk Score in the neighborhood paragraph ("Walk Score of 82 — most errands on foot") and Instagram captions for urban/suburban properties where walkability is a selling point.
+
+### GreatSchools API — School Ratings
+- **Endpoint**: `https://api.greatschools.org/schools/nearby?key={key}&state={state}&lat={lat}&lon={lon}&radius=2&limit=5&levelCode=e,m,h`
+- **Returns**: School name, type (public/private/charter), level (elementary/middle/high), GreatSchools rating (1–10), distance in miles.
+- **Query pattern**: Pass property lat/lon with a 2-mile radius. Filter for `levelCode=e,m,h` to get all three levels. Sort by rating descending to surface the strongest schools.
+- **Use in listing copy**: Reference the top-rated school by name and rating in both MLS and marketing versions. Example: "Zoned for Damonte Ranch High (GreatSchools: 8/10)." Always note if ratings are based on test scores vs. equity factors.
+
 ## Example outputs
 
 ### Example: Mountain view home in Reno, NV

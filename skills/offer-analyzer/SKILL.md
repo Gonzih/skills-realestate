@@ -108,6 +108,40 @@ OVERALL SCORE       X/10        X/10        X/10
 
 Followed by a 2–3 sentence recommendation in plain English, written for the seller (not the agent).
 
+## Live Data Sources
+
+### Redfin Public Data Patterns
+Redfin exposes structured property and market data through its public pages. Use these patterns to pull comparable sales and validate offer pricing:
+- **Sold comps URL pattern**: `https://www.redfin.com/city/{city-id}/{state}/{city}/filter/property-type=house,min-beds={n},max-beds={n},min-sqft={n},max-sqft={n},status=9,include=forsale+mlsonly,sold-3mo`
+  - `status=9` = sold; `sold-3mo` filters to last 90 days
+  - Extract: sale price, original list price, DOM, price/sqft, sale-to-list ratio
+- **Price history**: Each Redfin property page (`/homes/{redfin-id}`) includes a price history timeline — useful for identifying price reductions and re-list events that affect offer valuation
+- **Market data by zip**: `https://www.redfin.com/zipcode/{zip}/housing-market` exposes median sale price, sale-to-list ratio, and homes sold above list % for the zip — directly map to the scoring dimensions in Step 2
+
+**Use in offer analysis**: Pull sold comps within 0.5 mile, same bed/bath, closed in last 60 days. Compute median price/sqft. Multiply by subject property sqft to get an independent value estimate. Flag if any offer price is more than 5% above this estimate (appraisal risk) or below (seller may be leaving money on the table).
+
+### Cap Rate Formula with Rentometer Market Rent Data
+For investment property offers, compute cap rate to contextualize offer price:
+
+**Cap Rate = Net Operating Income (NOI) / Purchase Price**
+
+Where:
+- **Gross Rent**: query Rentometer for market rent estimate
+  - Rentometer API endpoint: `https://www.rentometer.com/api/v1/summary?address={encoded_address}&bedrooms={n}&auth_token={key}`
+  - Returns: mean rent, median rent, percentile distribution (25th/75th) for comparable rentals within configurable radius
+- **Vacancy allowance**: subtract 5–8% of gross rent (use 8% in soft markets, 5% in tight markets)
+- **Operating expenses**: use 40–45% of effective gross income as a standard expense ratio for SFR/small multifamily (covers taxes, insurance, maintenance, PM fees — excluding debt service)
+- **NOI** = Effective Gross Income × (1 − expense ratio)
+
+**Example query pattern**:
+```
+GET https://www.rentometer.com/api/v1/summary
+  ?address=123+Main+St+Reno+NV
+  &bedrooms=3
+  &auth_token={key}
+```
+Use the median rent returned. Apply the formula. Flag if cap rate < 4% (low yield relative to financing cost) or > 8% (either strong deal or elevated risk market — investigate further). Include cap rate in the risk flags section and seller presentation table for investment offers.
+
 ## Example outputs
 
 ### Example: Two-offer comparison
